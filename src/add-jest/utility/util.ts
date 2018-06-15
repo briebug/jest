@@ -234,8 +234,8 @@ export function isMultiAppV5(tree: Tree, options: JestOptions) {
 }
 
 /**
- * Attempt to retrieve the last package version from NPM
- * Return an optional "latest" version in case of an error
+ * Attempt to retrieve the latest package version from NPM
+ * Return an optional "latest" version in case of error
  * @param packageName
  */
 export function getLatestNodeVersion(
