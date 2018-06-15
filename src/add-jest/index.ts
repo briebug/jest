@@ -17,12 +17,16 @@ import {
   addPropertyToPackageJson,
   getWorkspaceConfig,
   getAngularVersion,
+  getLatestNodeVersion,
+  NpmRegistryPackage,
 } from './utility/util';
 
 import {
   addPackageJsonDependency,
   NodeDependencyType,
 } from './utility/dependencies';
+import { Observable, of } from 'rxjs';
+import { map, concatMap } from 'rxjs/operators';
 
 export default function(options: JestOptions): Rule {
   return (tree: Tree, context: SchematicContext) => {
@@ -40,7 +44,7 @@ export default function(options: JestOptions): Rule {
 }
 
 function updateDependencies(): Rule {
-  return (tree: Tree, context: SchematicContext) => {
+  return (tree: Tree, context: SchematicContext): Observable<Tree> => {
     const removeDependencies = [
       'karma',
       'karma-jasmine',
@@ -48,11 +52,7 @@ function updateDependencies(): Rule {
       'karma-chrome-launcher',
       'karma-coverage-istanbul-reporter',
     ];
-    const addJestDependencies = [
-      ['@types/jest', '23.0.2'],
-      ['jest', '23.1.0'],
-      ['jest-preset-angular', '5.2.2'],
-    ];
+    const addDependencies = of('jest', 'jest-preset-angular');
 
     context.logger.debug('Remove Karma & Jasmine dependencies');
 
@@ -67,22 +67,28 @@ function updateDependencies(): Rule {
 
     context.logger.debug('Adding Jest dependencies...');
 
-    addJestDependencies.forEach((dependency) => {
-      const [name, version] = dependency;
-      const jestDependency = {
-        type: NodeDependencyType.Dev,
-        name,
-        version,
-      };
+    context.addTask(new NodePackageInstallTask());
 
-      context.logger.debug(`Adding ${name}...`);
+    return addDependencies.pipe(
+      concatMap((packageName) => getLatestNodeVersion(packageName)),
+      map((packageFromRegistry: NpmRegistryPackage) => {
+        console.log('adding');
 
-      addPackageJsonDependency(tree, jestDependency);
+        const { name, version } = packageFromRegistry;
+        context.logger.debug(
+          `Adding ${name}:${version} to ${NodeDependencyType.Dev}`
+        );
 
-      context.addTask(new NodePackageInstallTask());
-    });
+        const jestDependency = {
+          type: NodeDependencyType.Dev,
+          name,
+          version,
+        };
 
-    return tree;
+        addPackageJsonDependency(tree, jestDependency);
+        return tree;
+      })
+    );
   };
 }
 
