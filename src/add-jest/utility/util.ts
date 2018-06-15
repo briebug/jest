@@ -243,7 +243,7 @@ export function getLatestNodeVersion(
 ): Promise<NpmRegistryPackage> {
   const DEFAULT_VERSION = 'latest';
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     return http
       .get(`http://registry.npmjs.org/${packageName}/latest`, (res) => {
         let rawData = '';
