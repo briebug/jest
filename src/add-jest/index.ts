@@ -109,7 +109,7 @@ function cleanAngularJson(options: JestOptions): Rule {
     } else if (options.__version__ < 6) {
       // TODO: clean up angular-cli.json file. different format that V6 angular.json
       console.warn(
-        'Automated clean up of the angular-cli.json file is not currently support for apps < version 6'
+        'Automated clean up of the angular-cli.json is not currently supported'
       );
     }
     return tree;
