@@ -25,7 +25,7 @@ import {
   addPackageJsonDependency,
   NodeDependencyType,
 } from './utility/dependencies';
-import { Observable, of } from 'rxjs';
+import { Observable, of, concat } from 'rxjs';
 import { map, concatMap } from 'rxjs/operators';
 
 export default function(options: JestOptions): Rule {
@@ -45,50 +45,47 @@ export default function(options: JestOptions): Rule {
 
 function updateDependencies(): Rule {
   return (tree: Tree, context: SchematicContext): Observable<Tree> => {
-    const removeDependencies = [
+    context.logger.debug('Updating dependencies...');
+    context.addTask(new NodePackageInstallTask());
+
+    const removeDependencies = of(
       'karma',
       'karma-jasmine',
       'karma-jasmine-html-reporter',
       'karma-chrome-launcher',
-      'karma-coverage-istanbul-reporter',
-    ];
-    const addDependencies = of('jest', 'jest-preset-angular');
+      'karma-coverage-istanbul-reporter'
+    ).pipe(
+      map((packageName: string) => {
+        context.logger.debug(`Removing ${packageName} dependency`);
 
-    context.logger.debug('Remove Karma & Jasmine dependencies');
+        removePackageJsonDependency(tree, {
+          type: NodeDependencyType.Dev,
+          name: packageName,
+        });
 
-    removeDependencies.forEach((packageName) => {
-      context.logger.debug(`Removing ${packageName}...`);
+        return tree;
+      })
+    );
 
-      removePackageJsonDependency(tree, {
-        type: NodeDependencyType.Dev,
-        name: packageName,
-      });
-    });
-
-    context.logger.debug('Adding Jest dependencies...');
-
-    context.addTask(new NodePackageInstallTask());
-
-    return addDependencies.pipe(
-      concatMap((packageName) => getLatestNodeVersion(packageName)),
+    const addDependencies = of('jest', 'jest-preset-angular').pipe(
+      concatMap((packageName: string) => getLatestNodeVersion(packageName)),
       map((packageFromRegistry: NpmRegistryPackage) => {
-        console.log('adding');
-
         const { name, version } = packageFromRegistry;
         context.logger.debug(
           `Adding ${name}:${version} to ${NodeDependencyType.Dev}`
         );
 
-        const jestDependency = {
+        addPackageJsonDependency(tree, {
           type: NodeDependencyType.Dev,
           name,
           version,
-        };
+        });
 
-        addPackageJsonDependency(tree, jestDependency);
         return tree;
       })
     );
+
+    return concat(removeDependencies, addDependencies);
   };
 }
 
