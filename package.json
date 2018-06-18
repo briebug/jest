@@ -16,7 +16,8 @@
     "teat:sandbox": "cd sandbox && npm run lint && npm run test -- --no-cache && npm run e2e && npm run build",
     "test:ci": "npm run clean:launch && npm run teat:sandbox && npm run clean",
     "link": "cd sandbox && npm link ../",
-    "debug": "echo \"debug not setup with @angular/schematics\n> node --inspect-brk $(which schematics) .:addJest\""
+    "debug": "echo \"debug not setup with @angular/schematics\n> node --inspect-brk $(which schematics) .:addJest\"",
+    "release": "np"
   },
   "keywords": [
     "schematics"
@@ -36,5 +37,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "np": "^3.0.4"
   }
 }
