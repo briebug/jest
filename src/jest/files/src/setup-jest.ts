@@ -17,13 +17,13 @@ Object.defineProperty(window, 'getComputedStyle', {
   value: () => ['-webkit-appearance'],
 });
 
-Object.defineProperty(document.body.style, "transform", {
+Object.defineProperty(document.body.style, 'transform', {
   value: () => {
     return {
       enumerable: true,
-      configurable: true
+      configurable: true,
     };
-  }
+  },
 });
 
 /* output shorter and more meaningful Zone error stack traces */
