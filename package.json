@@ -2,9 +2,9 @@
   "name": "@briebug/jest",
   "version": "1.3.0",
   "description": "Add jest to an Angular CLI project",
-  "repository": "briebug/jest-schematic",
-  "bugs": "https://github.com/briebug/jest-schematic/issues",
-  "homepage": "https://github.com/briebug/jest-schematic",
+  "repository": "briebug/jest",
+  "bugs": "https://github.com/briebug/jest/issues",
+  "homepage": "https://github.com/briebug/jest",
   "main": "src/jest/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json -watch",
