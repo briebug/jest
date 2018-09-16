@@ -1,3 +1,7 @@
+## DEPRECATED ⚠
+
+This repo & package have been deprecated and renamed to `@briebug/jest-schematic`. All future development will take place at https://github.com/briebug/jest-schematic
+
 # Jest Angular Schematic
 
 [![npm (scoped)](https://img.shields.io/npm/v/@briebug/jest.svg)](https://www.npmjs.com/package/@briebug/jest)
